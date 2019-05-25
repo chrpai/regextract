@@ -16,6 +16,7 @@
         </RegistryKey>
         <RegistryKey Root="HKLM" Key="Test4">
           <RegistryValue Name="StringValue" Value="StringValueTest" Type="string"/>
+          <RegistryValue Name="IntegerValue" Value="1" Type="integer"/>
         </RegistryKey>
       </Component>
     </DirectoryRef>

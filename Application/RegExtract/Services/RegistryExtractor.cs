@@ -31,7 +31,7 @@ namespace RegExtract.Services
             XDocument document = new XDocument( new XElement(ns + "Wix", new XElement(ns + "Include")));
             XElement includeElement = document.Descendants(ns + "Include").First();
 
-            string selectComment = "SELECT `Root`, `Key`, `Name`, `Value` FROM `Registry` ORDER BY `Root`, `Key`";
+            string selectComment = "SELECT `Registry`, `Root`, `Key`, `Name`, `Value` FROM `Registry` ORDER BY `Root`, `Key`";
             try
             {
                 using (View view = _database.OpenView(selectComment))
@@ -39,20 +39,21 @@ namespace RegExtract.Services
                     view.Execute();
                     foreach (var record in view)
                     {
-                        RegistryRootType root = (RegistryRootType)Enum.Parse(typeof(RegistryRootType), record.GetInteger(1).ToString());
-                        string key = record.GetString(2);
-                        string name = record.GetString(3);
-                        string value = record.GetString(4);
+                        string registry = record.GetString(1);
+                        RegistryRootType root = (RegistryRootType)Enum.Parse(typeof(RegistryRootType), record.GetInteger(2).ToString());
+                        string key = record.GetString(3);
+                        string name = record.GetString(4);
+                        string value = record.GetString(5);
 
                         XElement currentRegistryKeyElement = null;
 
                         string currentRegistryKey = $"{root.ToString()}|{key}";
                         if (!currentRegistryKey.Equals(previousRegistryKey))
                         {
-                            if(string.IsNullOrEmpty(value))
+                            currentRegistryKeyElement = new XElement(ns + "RegistryKey", new XAttribute("Id", registry), new XAttribute("Root", root), new XAttribute("Key", key));
+                            if (string.IsNullOrEmpty(value))
                             {
 
-                                currentRegistryKeyElement = new XElement(ns + "RegistryKey", new XAttribute("Root", root), new XAttribute("Key", key));
                                 switch (name)
                                 {
                                     case "*":
@@ -68,14 +69,28 @@ namespace RegExtract.Services
                             }
                             else
                             {
-                                currentRegistryKeyElement = new XElement(ns + "RegistryKey", new XAttribute("Root", root), new XAttribute("Key", key));
-                                currentRegistryKeyElement.Add(
-                                    new XElement(
-                                        ns + "RegistryValue",
-                                            new XAttribute("Name", name),
-                                            new XAttribute("Value", value)
-                                            )
-                                            );
+                                char prefix = name[0];
+                                string dataType = string.Empty;
+                                switch (prefix)
+                                {
+                                    case '#':
+                                        dataType = "integer";
+                                        break;
+                                    default:
+                                        dataType = "string";
+                                        break;
+                                }
+
+                                XElement currentRegistryValueElement = new XElement(
+                                                     ns + "RegistryValue",
+                                                         new XAttribute("Id", registry),
+                                                         new XAttribute("Name", name),
+                                                         new XAttribute("Value", value),
+                                                         new XAttribute("Type", dataType)
+                                                         );
+
+                                currentRegistryKeyElement.Add(currentRegistryValueElement);
+
                             }
                             includeElement.Add(currentRegistryKeyElement);
                             previousRegistryKey = currentRegistryKey;
