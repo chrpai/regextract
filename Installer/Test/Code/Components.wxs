@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+    
+    <ComponentGroup Id="Test">
+      <ComponentRef Id="c1"/>
+    </ComponentGroup>
+
+    <DirectoryRef Id="INSTALLLOCATION">
+      <Component Id="c1" Guid="{08EC045B-284A-444B-A62A-4C9807715F2B}" KeyPath="yes">
+        <RegistryKey Root="HKLM" Key="Test1" Action="create">
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="Test2" Action="createAndRemoveOnUninstall" >
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="Test3" ForceDeleteOnUninstall="yes">
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
+	</Fragment>
+</Wix>

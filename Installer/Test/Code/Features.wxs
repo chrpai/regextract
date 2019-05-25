@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="CompanyFolder" Name="My Company">
+          <Directory Id="INSTALLLOCATION" Name="Test">
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Feature Id="Test" Title="Test" Description="Installs all the files needed for Test" Level="1" AllowAdvertise="no" ConfigurableDirectory="INSTALLLOCATION">
+      <ComponentGroupRef Id="Test" />
+    </Feature>
+  </Fragment>
+</Wix>

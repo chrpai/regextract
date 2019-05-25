@@ -32,38 +32,64 @@ namespace RegExtract.Services
             XElement includeElement = document.Descendants(ns + "Include").First();
 
             string selectComment = "SELECT `Root`, `Key`, `Name`, `Value` FROM `Registry` ORDER BY `Root`, `Key`";
-            using (View view = _database.OpenView(selectComment))
+            try
             {
-                view.Execute();
-                foreach (var record in view)
+                using (View view = _database.OpenView(selectComment))
                 {
-                    RegistryRootType root = (RegistryRootType)Enum.Parse(typeof(RegistryRootType), record.GetInteger(1).ToString());
-                    string key = record.GetString(2);
-                    string name = record.GetString(3);
-                    string value = record.GetString(4);
-
-                    XElement currentRegistryKeyElement = null;
-
-                    string currentRegistryKey = $"{root.ToString()}|{key}";
-                    if (!currentRegistryKey.Equals(previousRegistryKey))
+                    view.Execute();
+                    foreach (var record in view)
                     {
-                        currentRegistryKeyElement = new XElement(ns + "RegistryKey", new XAttribute("Root", root), new XAttribute("Key", key));
-                        includeElement.Add(currentRegistryKeyElement);
-                        previousRegistryKey = currentRegistryKey;
+                        RegistryRootType root = (RegistryRootType)Enum.Parse(typeof(RegistryRootType), record.GetInteger(1).ToString());
+                        string key = record.GetString(2);
+                        string name = record.GetString(3);
+                        string value = record.GetString(4);
+
+                        XElement currentRegistryKeyElement = null;
+
+                        string currentRegistryKey = $"{root.ToString()}|{key}";
+                        if (!currentRegistryKey.Equals(previousRegistryKey))
+                        {
+                            if(string.IsNullOrEmpty(value))
+                            {
+
+                                currentRegistryKeyElement = new XElement(ns + "RegistryKey", new XAttribute("Root", root), new XAttribute("Key", key));
+                                switch (name)
+                                {
+                                    case "*":
+                                        currentRegistryKeyElement.Add(new XAttribute("Action", "createAndRemoveOnUninstall"));
+                                        break;
+                                    case "+":
+                                        currentRegistryKeyElement.Add(new XAttribute("Action", "create"));
+                                        break;
+                                    case "-":
+                                        currentRegistryKeyElement.Add(new XAttribute("ForceDeleteOnUninstall", "yes"));
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                currentRegistryKeyElement = new XElement(ns + "RegistryKey", new XAttribute("Root", root), new XAttribute("Key", key));
+                                currentRegistryKeyElement.Add(
+                                    new XElement(
+                                        ns + "RegistryValue",
+                                            new XAttribute("Root", root.ToString()),
+                                            new XAttribute("Key", key),
+                                            new XAttribute("Value", value)
+                                            )
+                                            );
+                            }
+                            includeElement.Add(currentRegistryKeyElement);
+                            previousRegistryKey = currentRegistryKey;
+
+                        }
                     }
-
-                    currentRegistryKeyElement.Add(
-                        new XElement(
-                            ns + "RegistryValue",
-                                new XAttribute("Root", root.ToString()),
-                                new XAttribute("Key", key),
-                                new XAttribute("Value", value)
-                                )
-                                );
                 }
-
-                Console.WriteLine(document);
             }
+            catch(Exception ex)
+            {
+
+            }
+            Console.WriteLine(document);
         }
     }
 }

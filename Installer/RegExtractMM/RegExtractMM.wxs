@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ComponentRules="OneToOne"?>
+  <!-- SourceDir instructs IsWiX the location of the directory that contains files for this merge module -->
+  <?define SourceDir="..\Deploy"?>
+  <Module Id="RegExtractMM" Language="1033" Version="1.0.0.0">
+    <Package Id="70ea2d6e-97f6-46a2-9f72-bd16d20bb987" Manufacturer="RegExtractMM" InstallerVersion="200" />
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="MergeRedirectFolder">
+        <Component Id="owcF687CD25DBEA41F3A5555729AC19B5F6" Guid="615b5678-171b-e34b-353a-6d7999a14edf">
+          <File Id="owfF687CD25DBEA41F3A5555729AC19B5F6" Source="$(var.SourceDir)\Microsoft.Deployment.WindowsInstaller.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="owc9A40350F6A3447B50113AFABFE4BC09F" Guid="b543a86a-dc61-540c-2815-3239da2e47b9">
+          <File Id="owf9A40350F6A3447B50113AFABFE4BC09F" Source="$(var.SourceDir)\RegExtract.exe" KeyPath="yes" />
+        </Component>
+        <Component Id="owcF3E76CD060BA5565345BE3C9FB881DF3" Guid="05efed85-6483-70e5-1d66-be20ba6fc3e1">
+          <File Id="owfF3E76CD060BA5565345BE3C9FB881DF3" Source="$(var.SourceDir)\RegExtract.exe.config" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </Directory>
+    <ComponentGroupRef Id="Custom" />
+  </Module>
+</Wix>

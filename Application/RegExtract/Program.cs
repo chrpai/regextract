@@ -10,10 +10,18 @@ namespace RegExtract
     {
         static void Main(string[] args)
         {
-            string msiPath = @"C:\GitHub\IsWiX-4.14.4.0.msi";
-            using (RegistryExtractor registryExtractor = new RegistryExtractor(msiPath))
+            string msiPath = @"..\..\..\..\Test\Test.msi";
+
+            try
             {
-                registryExtractor.Extract(@"C:\github\registry.wxi");
+                using (RegistryExtractor registryExtractor = new RegistryExtractor(msiPath))
+                {
+                    registryExtractor.Extract(@"..\..\..\..\Test\test.wxi");
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
             Console.WriteLine("PAK");

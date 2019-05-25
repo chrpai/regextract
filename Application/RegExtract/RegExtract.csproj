@@ -56,4 +56,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /iery "$(TargetDir)*.*" "$(SolutionDir)..\Installer\Deploy"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
