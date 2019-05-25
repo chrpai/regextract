@@ -72,8 +72,7 @@ namespace RegExtract.Services
                                 currentRegistryKeyElement.Add(
                                     new XElement(
                                         ns + "RegistryValue",
-                                            new XAttribute("Root", root.ToString()),
-                                            new XAttribute("Key", key),
+                                            new XAttribute("Name", name),
                                             new XAttribute("Value", value)
                                             )
                                             );

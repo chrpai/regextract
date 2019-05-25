@@ -14,6 +14,9 @@
         </RegistryKey>
         <RegistryKey Root="HKLM" Key="Test3" ForceDeleteOnUninstall="yes">
         </RegistryKey>
+        <RegistryKey Root="HKLM" Key="Test4">
+          <RegistryValue Name="StringValue" Value="StringValueTest" Type="string"/>
+        </RegistryKey>
       </Component>
     </DirectoryRef>
 	</Fragment>
