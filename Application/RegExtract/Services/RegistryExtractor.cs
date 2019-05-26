@@ -134,6 +134,10 @@ namespace RegExtract.Services
                             {
                                 currentRegistryValueElement.Add(new XAttribute("Value", value));
                             }
+
+                            // TODO: Parse LockPermission Table and author Permission Element
+                            // https://docs.microsoft.com/en-us/windows/desktop/msi/lockpermissions-table
+
                             currentRegistryKeyElement.Add(currentRegistryValueElement);
                         }
                     }

@@ -15,7 +15,11 @@
         <RegistryKey Root="HKLM" Key="Test3" ForceDeleteOnUninstall="yes">
         </RegistryKey>
         <RegistryKey Root="HKLM" Key="Test4">
-          <RegistryValue Name="StringValue" Value="StringValueTest" Type="string"/>
+          <RegistryValue Name="StringValue" Value="StringValueTest" Type="string">
+            <!-- Not Currently Evaluated-->
+            <!-- https://docs.microsoft.com/en-us/windows/desktop/msi/lockpermissions-table -->
+            <Permission User="BOB" GenericAll="yes" />
+          </RegistryValue>
           <RegistryValue Name="IntegerValue" Value="1" Type="integer"/>
           <RegistryValue Name="BinaryValue" Value="00" Type="binary"/>
           <RegistryValue Name="ExpandandableValue" Value="%PROGRAMFILES%" Type="expandable"/>
