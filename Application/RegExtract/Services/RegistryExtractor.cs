@@ -37,6 +37,7 @@ namespace RegExtract.Services
                 using (View view = _database.OpenView(selectComment))
                 {
                     view.Execute();
+                    XElement currentRegistryKeyElement = null;
                     foreach (var record in view)
                     {
                         string registry = record.GetString(1);
@@ -45,7 +46,6 @@ namespace RegExtract.Services
                         string name = record.GetString(4);
                         string value = record.GetString(5);
 
-                        XElement currentRegistryKeyElement = null;
 
                         string currentRegistryKey = $"{root.ToString()}|{key}";
                         if (!currentRegistryKey.Equals(previousRegistryKey))
@@ -67,35 +67,52 @@ namespace RegExtract.Services
                                         break;
                                 }
                             }
-                            else
-                            {
-                                char prefix = name[0];
-                                string dataType = string.Empty;
-                                switch (prefix)
-                                {
-                                    case '#':
-                                        dataType = "integer";
-                                        break;
-                                    default:
-                                        dataType = "string";
-                                        break;
-                                }
-
-                                XElement currentRegistryValueElement = new XElement(
-                                                     ns + "RegistryValue",
-                                                         new XAttribute("Id", registry),
-                                                         new XAttribute("Name", name),
-                                                         new XAttribute("Value", value),
-                                                         new XAttribute("Type", dataType)
-                                                         );
-
-                                currentRegistryKeyElement.Add(currentRegistryValueElement);
-
-                            }
                             includeElement.Add(currentRegistryKeyElement);
                             previousRegistryKey = currentRegistryKey;
 
                         }
+
+                        //TODO: Implement Multistring @Action attribute (PREPEND, APPEND)
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            string dataType = string.Empty;
+
+                            if (value.Contains("[~]"))
+                            {
+                                dataType = "multiString";
+                            }
+                            else if (value.StartsWith("#%"))
+                            {
+                                value = value.Substring(2);
+                                dataType = "expandable";
+                            }
+                            else if(value.StartsWith("#x"))
+                            {
+                                value = value.Substring(2);
+                                dataType = "binary";
+                            }
+                            else if (value.StartsWith("#"))
+                            {
+                                value = value.Substring(1);
+                                dataType = "integer";
+                            }
+                            else
+                            {
+                                dataType = "string";
+                            }
+
+                            XElement currentRegistryValueElement = new XElement(
+                                                    ns + "RegistryValue",
+                                                        new XAttribute("Id", registry),
+                                                        new XAttribute("Name", name),
+                                                        new XAttribute("Value", value),
+                                                        new XAttribute("Type", dataType)
+                                                        );
+
+                            currentRegistryKeyElement.Add(currentRegistryValueElement);
+                        }
+
+
                     }
                 }
             }
