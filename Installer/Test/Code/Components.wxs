@@ -21,7 +21,12 @@
           <RegistryValue Name="ExpandandableValue" Value="%PROGRAMFILES%" Type="expandable"/>
           <RegistryValue Name="MultiStringValueAppend" Value="StringValueAppend" Type="multiString" Action="append"/>
           <RegistryValue Name="MultiStringValuePrepend" Value="StringValuePrepend" Type="multiString" Action="prepend"/>
-          <RegistryValue Name="MultiStringValue" Value="MultiStringValuePrepend" Type="multiString"/>
+          <RegistryValue Name="MultiStringValue" Type="multiString" Action="append">
+            <MultiStringValue>Test</MultiStringValue>
+            <MultiStringValue>Test</MultiStringValue>
+            <MultiStringValue></MultiStringValue>
+            <MultiStringValue>Test</MultiStringValue>
+          </RegistryValue>
         </RegistryKey>
       </Component>
     </DirectoryRef>

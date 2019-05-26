@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Deployment.WindowsInstaller;
@@ -72,14 +73,23 @@ namespace RegExtract.Services
 
                         }
 
-                        //TODO: Implement Multistring @Action attribute (PREPEND, APPEND)
                         if (!string.IsNullOrEmpty(value))
                         {
                             string dataType = string.Empty;
-
+                            string multiStringAction = string.Empty;
                             if (value.Contains("[~]"))
                             {
                                 dataType = "multiString";
+                                if (value.StartsWith("[~]") && !value.EndsWith("[~]"))
+                                {
+                                    value = value.Substring(3);
+                                    multiStringAction = "append";
+                                }
+                                else if (!value.StartsWith("[~]") && value.EndsWith("[~]"))
+                                {
+                                    value = value.Substring(0, value.Length-3);
+                                    multiStringAction = "prepend";
+                                }
                             }
                             else if (value.StartsWith("#%"))
                             {
@@ -105,14 +115,27 @@ namespace RegExtract.Services
                                                     ns + "RegistryValue",
                                                         new XAttribute("Id", registry),
                                                         new XAttribute("Name", name),
-                                                        new XAttribute("Value", value),
                                                         new XAttribute("Type", dataType)
                                                         );
 
+                            if (dataType == "multiString")
+                            {
+                                List<string> muliStringValues = value.Split(new string[] { "[~]" }, StringSplitOptions.None).ToList();
+                                if (!string.IsNullOrEmpty(multiStringAction))
+                                {
+                                    currentRegistryValueElement.Add(new XAttribute("Action", multiStringAction));
+                                }
+                                foreach (var multiStringValue in muliStringValues)
+                                {
+                                    currentRegistryValueElement.Add(new XElement(ns + "MultiStringValue", multiStringValue));
+                                }
+                            }
+                            else
+                            {
+                                currentRegistryValueElement.Add(new XAttribute("Value", value));
+                            }
                             currentRegistryKeyElement.Add(currentRegistryValueElement);
                         }
-
-
                     }
                 }
             }
